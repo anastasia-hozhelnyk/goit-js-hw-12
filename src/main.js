@@ -16,7 +16,7 @@ const searchForm = document.querySelector('.form-search-img');
 const inputForm = document.querySelector('.search-input');
 const loader = document.querySelector('.loader');
 const listResults = document.querySelector('.list-results');
-const loadMoreBtn = document.querySelector('.load-btn');
+const loadBtn = document.querySelector('.load-btn');
 
 let request = '';
 let pageNumber = 1;
@@ -35,7 +35,7 @@ function getResponseFunc(request, itemsPerPage, pageNumber) {
 
       createGallery(data.hits);
       lightbox.refresh();
-      loadMoreBtn.classList.remove('is-hidden');
+      loadBtn.classList.remove('is-hidden');
 
       const totalPages = Math.ceil(data.totalHits / itemsPerPage);
 
@@ -44,7 +44,7 @@ function getResponseFunc(request, itemsPerPage, pageNumber) {
           message: 'We`re sorry, but you`ve reached the end of search results.',
           position: 'topRight',
         });
-        loadMoreBtn.classList.add('is-hidden');
+        loadBtn.classList.add('is-hidden');
       }
     })
     .catch(error => console.log(error))
@@ -76,14 +76,14 @@ function searchFormHandler(event) {
 async function pageNumberIncrement() {
   pageNumber += 1;
 
-  loadMoreBtn.classList.add('is-hidden');
+  loadBtn.classList.add('is-hidden');
   loader.classList.remove('is-hidden');
 
   await getResponseFunc(request, itemsPerPage, pageNumber);
-  smoothScrollOnLoadMore();
+  smoothScrollOnLoad();
 }
 
-function smoothScrollOnLoadMore() {
+function smoothScrollOnLoad() {
   const lastItemGallery = listResults.querySelector('.item-results:last-child');
   const lastItemGalleryHeight = lastItemGallery.getBoundingClientRect().height;
 
@@ -95,4 +95,4 @@ function smoothScrollOnLoadMore() {
 }
 
 searchForm.addEventListener('submit', searchFormHandler);
-loadMoreBtn.addEventListener('click', pageNumberIncrement);
+loadBtn.addEventListener('click', pageNumberIncrement);
