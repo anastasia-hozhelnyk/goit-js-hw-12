@@ -193,3 +193,8 @@
     background-color: #6c8cff;
   }
 }
+
+.loader.is-hidden,
+.load-btn.is-hidden {
+  display: none;
+}

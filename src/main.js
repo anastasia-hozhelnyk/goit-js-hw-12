@@ -12,17 +12,37 @@ const lightbox = new SimpleLightbox('.gallery-link', {
   captionsData: 'alt',
   captionDelay: 250,
 });
+
 const searchForm = document.querySelector('.form-search-img');
 const inputForm = document.querySelector('.search-input');
-const loader = document.querySelector('.loader');
 const listResults = document.querySelector('.list-results');
+const loader = document.querySelector('.loader');
 const loadBtn = document.querySelector('.load-btn');
 
 let request = '';
 let pageNumber = 1;
 let itemsPerPage = 15;
 
-function getResponseFunc(request, itemsPerPage, pageNumber) {
+function searchFormHandler(event) {
+  event.preventDefault();
+  request = inputForm.value.trim();
+  event.target.reset();
+
+  if (!request) {
+    return iziToast.warning({
+      message: 'The field cannot be empty!',
+      position: 'topRight',
+    });
+  }
+
+  loader.classList.remove('is-hidden');
+  listResults.innerHTML = '';
+  pageNumber = 1;
+
+  getResponseFunction(request, itemsPerPage, pageNumber);
+}
+
+function getResponseFunction(request, itemsPerPage, pageNumber) {
   return getRequest(request, itemsPerPage, pageNumber)
     .then(({ data }) => {
       if (data.hits.length === 0) {
@@ -41,6 +61,7 @@ function getResponseFunc(request, itemsPerPage, pageNumber) {
 
       if (pageNumber >= totalPages) {
         iziToast.warning({
+          title: 'Error',
           message: 'We`re sorry, but you`ve reached the end of search results.',
           position: 'topRight',
         });
@@ -53,33 +74,13 @@ function getResponseFunc(request, itemsPerPage, pageNumber) {
     });
 }
 
-function searchFormHandler(event) {
-  event.preventDefault();
-
-  request = inputForm.value.trim();
-  event.target.reset();
-
-  if (!request) {
-    return iziToast.warning({
-      message: 'The field cannot be empty!',
-      position: 'topRight',
-    });
-  }
-
-  loader.classList.remove('is-hidden');
-  listResults.innerHTML = '';
-  pageNumber = 1;
-
-  getResponseFunc(request, itemsPerPage, pageNumber);
-}
-
 async function pageNumberIncrement() {
   pageNumber += 1;
 
   loadBtn.classList.add('is-hidden');
   loader.classList.remove('is-hidden');
 
-  await getResponseFunc(request, itemsPerPage, pageNumber);
+  await getResponseFunction(request, itemsPerPage, pageNumber);
   smoothScrollOnLoad();
 }
 
